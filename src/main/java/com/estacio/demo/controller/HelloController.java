@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping;
  */
 @RestController
 public class HelloController {
+    @GetMapping("/users")
+    public String getUsers() {
+        Database.connect();
+        String result = Database.getUsers();
+        return new String(result);
+    }
 
-   @GetMapping("/users")
-   public String getUsers() {
-       return new String("You got users!");
-   }
-
-   @GetMapping("/accounts")
-   public String getAccounts() {
-       return new String("You got accounts!");
-   }
-   
+    @GetMapping("/accounts")
+    public String getAccounts() {
+        return new String("You got accounts!");
+    }
 }
