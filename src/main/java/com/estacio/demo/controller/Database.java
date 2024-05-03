@@ -109,4 +109,26 @@ public class Database {
          return response.toString();
       }
    }
+   
+   public static String deleteItemByID (String id) {
+      JSONObject response = new JSONObject();
+
+      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
+         Statement stmt = connection.createStatement();
+         ResultSet itemToDelete = stmt.executeQuery(String.format("SELECT name FROM MATERIALS WHERE id = %s", id));
+         
+         if (itemToDelete.getString("name") != null) {
+            stmt.execute(String.format("DELETE FROM MATERIALS WHERE id = %s", id));
+            response.put("message", String.format("Item with ID %s deleted from the database.", id));
+         } else {
+            response.put("error", String.format("No item with ID %s found.", id));
+         }
+
+         return response.toString();
+      } catch (SQLException error) {
+         response.put("error", error.getMessage());
+         System.out.println(error.getMessage());
+         return response.toString();
+      }
+   }
 }

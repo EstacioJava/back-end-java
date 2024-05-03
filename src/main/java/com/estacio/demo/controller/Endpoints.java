@@ -63,4 +63,9 @@ public class Endpoints {
     String clearMaterialsTable() {
         return Database.clearMaterialsTable();
     }
+    
+    @DeleteMapping("/materials/{id}") 
+    String deleteItemByID(@PathVariable String id) {
+        return Database.deleteItemByID(id);
+    }
 }
