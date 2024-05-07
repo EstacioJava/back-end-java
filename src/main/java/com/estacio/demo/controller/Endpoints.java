@@ -3,6 +3,8 @@ package com.estacio.demo.controller;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.estacio.demo.model.Material;
+import com.estacio.demo.model.Storage;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,41 +33,41 @@ public class Endpoints {
     @PostMapping("/materials")
     String registerMaterial(@RequestBody String request) {
         Material material = new Material();
+        material.name = getJSONValue("name", request);
+        material.thickness = Integer.parseInt(getJSONValue("thickness", request));
 
-        material.setName(getJSONValue("name", request));
-        material.setLength(Integer.parseInt(getJSONValue("length", request)));
-        material.setWidth(Integer.parseInt(getJSONValue("width", request)));
-        material.setPrice(Float.parseFloat(getJSONValue("price", request)));
-
-        if (
-            material.name != null &&
-            material.length != null &&
-            material.width != null &&
-            material.price != null
-        ) {
-            return Database.registerMaterial(material.name, material.length, material.width, material.price);
-        } else {
-            return "[ERROR] There are propeties missing.";
-        } 
+        return material.addMaterial();
     }
 
-    @GetMapping("/materials")
-    String getAllMaterials() {
-        return Database.getMaterials();
-    }
-    
-    @GetMapping("/materials/{id}")
-    String getOneMaterial(@PathVariable("id") String id) {
-        return Database.getSingleMaterial(id);
+    @PostMapping("/storage")
+    String addToStorage(@RequestBody String request) {
+        Storage storageItem = new Storage();
+
+        storageItem.name = getJSONValue("name", request);
+        storageItem.length = Integer.parseInt(getJSONValue("length", request));
+        storageItem.width = Integer.parseInt(getJSONValue("width", request));
+        storageItem.price = Float.parseFloat(getJSONValue("price", request));
+
+        return storageItem.addItemToStorage();
     }
 
-    @DeleteMapping("/materials") 
-    String clearMaterialsTable() {
-        return Database.clearMaterialsTable();
+    @GetMapping("/storage")
+    String getStorageItems() {
+        return Storage.getStorageItems();
     }
     
-    @DeleteMapping("/materials/{id}") 
-    String deleteItemByID(@PathVariable String id) {
-        return Database.deleteItemByID(id);
+    @GetMapping("/storage/{id}")
+    String getSingleStorageItem(@PathVariable("id") String id) {
+        return Storage.getSingleStorageItem(id);
+    }
+
+    @DeleteMapping("/storage") 
+    String clearStorage() {
+        return Storage.clearStorage();
+    }
+    
+    @DeleteMapping("/storage/{id}") 
+    String deleteStorageItemByID(@PathVariable String id) {
+        return Storage.deleteStorageItemByID(id);
     }
 }
