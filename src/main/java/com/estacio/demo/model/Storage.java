@@ -16,6 +16,7 @@ public class Storage {
    public Integer thickness = null;
    public Integer length = null;
    public Integer width = null;
+   public Integer quantity = null;
    public Float price = null;
 
    public String addItemToStorage () {
@@ -27,11 +28,12 @@ public class Storage {
          response.put("length", length);
          response.put("width", width);
          response.put("price", price);
+         response.put("quantity", quantity);
          
          Statement stmt = connection.createStatement();
          if ( name != null && length != null && width != null && price != null) {
-            stmt.execute(String.format(Locale.US, "INSERT INTO storage (name, price, length, width) VALUES ('%s', %.2f, %d, %d)", name, price, length, width));
-            System.out.println(String.format(Locale.US, "[SQLITE] %s :: %dfmm x %dfmm  -  R$ %f", name, length, width, price));
+            stmt.execute(String.format(Locale.US, "INSERT INTO storage (name, price, length, width, quantity) VALUES ('%s', %.2f, %d, %d, %d)", name, price, length, width, quantity));
+            System.out.println(String.format(Locale.US, "[SQLITE] %s :: %dfmm x %dfmm  -  R$ %f (%dx)", name, length, width, price, quantity));
          } else {
             return response.put("error", "[SQLITE::ERROR] There are propeties missing.").toString();
          } 
@@ -59,6 +61,7 @@ public class Storage {
             currentMaterial.put("length", allMaterialsRS.getInt("length"));
             currentMaterial.put("width", allMaterialsRS.getInt("width"));
             currentMaterial.put("price", allMaterialsRS.getFloat("price"));
+            currentMaterial.put("quantity", allMaterialsRS.getInt("quantity"));
 
             materials.put(currentMaterial);
          }
@@ -84,6 +87,7 @@ public class Storage {
             material.put("length", chosenMaterial.getInt("length"));
             material.put("width", chosenMaterial.getInt("width"));
             material.put("price", chosenMaterial.getFloat("price"));
+            material.put("quantity", chosenMaterial.getInt("quantity"));
          }
 
          return material.toString();

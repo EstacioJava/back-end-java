@@ -6,16 +6,19 @@ import com.estacio.demo.model.Material;
 import com.estacio.demo.model.Storage;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * HelloController
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", methods = RequestMethod.GET)
 public class Endpoints {
     String getJSONValue (String key, String jsonObject) {
         JSONObject object = new JSONObject(jsonObject);

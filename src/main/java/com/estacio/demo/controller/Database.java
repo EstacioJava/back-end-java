@@ -14,7 +14,7 @@ public class Database {
          Statement stmt = connection.createStatement();
          
          stmt.execute(
-            "CREATE TABLE IF NOT EXISTS storage (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255), price REAL, length INTEGER, width INTEGER)"
+            "CREATE TABLE IF NOT EXISTS storage (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255), price REAL, length INTEGER, width INTEGER, quantity INTEGER)"
          );
 
          stmt.execute(
