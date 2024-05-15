@@ -29,12 +29,14 @@ public class Storage {
          response.put("width", width);
          response.put("price", price);
          response.put("quantity", quantity);
+         response.put("thickness", thickness);
          
          Statement stmt = connection.createStatement();
-         if ( name != null && length != null && width != null && price != null) {
-            stmt.execute(String.format(Locale.US, "INSERT INTO storage (name, price, length, width, quantity) VALUES ('%s', %.2f, %d, %d, %d)", name, price, length, width, quantity));
-            System.out.println(String.format(Locale.US, "[SQLITE] %s :: %dfmm x %dfmm  -  R$ %f (%dx)", name, length, width, price, quantity));
+         if (name != null && length != null && width != null && price != null && quantity != null && thickness != null) {
+            stmt.execute(String.format(Locale.US, "INSERT INTO storage (name, price, length, width, quantity, thickness) VALUES ('%s', %.2f, %d, %d, %d, %d)", name, price, length, width, quantity, thickness));
+            System.out.println(String.format(Locale.US, "[SQLITE] %s :: %dmm x %dmm x %dmm -  R$ %f (%dx)", name, length, width, thickness, price, quantity));
          } else {
+            System.out.println(String.format(Locale.US, "[SQLITE] %s :: %dmm x %dmm x %dmm -  R$ %f (%dx)", name, length, width, thickness, price, quantity));
             return response.put("error", "[SQLITE::ERROR] There are propeties missing.").toString();
          } 
    
@@ -51,20 +53,22 @@ public class Storage {
       Database.connect();
 
       try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
-         ResultSet allMaterialsRS = connection.prepareStatement("SELECT * FROM storage").executeQuery();
+         ResultSet allItems = connection.prepareStatement("SELECT * FROM storage").executeQuery();
    
-         while (allMaterialsRS.next()) {
+         while (allItems.next()) {
             JSONObject currentMaterial = new JSONObject();
 
-            currentMaterial.put("id", allMaterialsRS.getString("id"));
-            currentMaterial.put("name", allMaterialsRS.getString("name"));
-            currentMaterial.put("length", allMaterialsRS.getInt("length"));
-            currentMaterial.put("width", allMaterialsRS.getInt("width"));
-            currentMaterial.put("price", allMaterialsRS.getFloat("price"));
-            currentMaterial.put("quantity", allMaterialsRS.getInt("quantity"));
+            currentMaterial.put("id", allItems.getString("id"));
+            currentMaterial.put("name", allItems.getString("name"));
+            currentMaterial.put("length", allItems.getInt("length"));
+            currentMaterial.put("width", allItems.getInt("width"));
+            currentMaterial.put("price", allItems.getFloat("price"));
+            currentMaterial.put("quantity", allItems.getInt("quantity"));
+            currentMaterial.put("thickness", allItems.getInt("thickness"));
 
             materials.put(currentMaterial);
          }
+         
          return materials.toString();
       } catch (SQLException error) {
          System.out.println(error.getMessage());
@@ -87,6 +91,7 @@ public class Storage {
             material.put("length", chosenMaterial.getInt("length"));
             material.put("width", chosenMaterial.getInt("width"));
             material.put("price", chosenMaterial.getFloat("price"));
+            material.put("thickness", chosenMaterial.getInt("thickness"));
             material.put("quantity", chosenMaterial.getInt("quantity"));
          }
 

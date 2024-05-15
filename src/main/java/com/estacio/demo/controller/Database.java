@@ -1,7 +1,6 @@
 package com.estacio.demo.controller;
 
 import java.sql.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Database {
@@ -14,11 +13,11 @@ public class Database {
          Statement stmt = connection.createStatement();
          
          stmt.execute(
-            "CREATE TABLE IF NOT EXISTS storage (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255), price REAL, length INTEGER, width INTEGER, quantity INTEGER)"
+            "CREATE TABLE IF NOT EXISTS storage (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL, price REAL NOT NULL, length INTEGER NOT NULL, width INTEGER NOT NULL, quantity INTEGER NOT NULL, thickness INTEGER NOT NULL)"
          );
 
          stmt.execute(
-            "CREATE TABLE IF NOT EXISTS materials (ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255), thickness INTEGER)"
+            "CREATE TABLE IF NOT EXISTS materials (ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL, thickness INTEGER NOT NULL);"
          );
 
          response.put("message", "Successfully connected to the database.");

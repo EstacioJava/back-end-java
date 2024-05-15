@@ -2,10 +2,12 @@ package com.estacio.demo.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.estacio.demo.controller.Database;
@@ -31,6 +33,29 @@ public class Material {
          response.put("error", error.getMessage());
          System.out.println(error.getMessage());
          return response.toString();
+      }
+   }
+
+   public static String getMaterials () {
+      JSONArray allMaterialsArray = new JSONArray();
+      Database.connect();
+
+      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
+         ResultSet allMaterials = connection.prepareStatement("SELECT * FROM materials").executeQuery();
+
+         while (allMaterials.next()) {
+            JSONObject currentMaterial = new JSONObject();
+
+            currentMaterial.put("name", allMaterials.getString("name"));
+            currentMaterial.put("thickness", allMaterials.getInt("thickness"));
+
+            allMaterialsArray.put(currentMaterial);
+         }
+
+         return allMaterialsArray.toString();
+      } catch (SQLException error) {
+         System.out.println(error.getMessage());
+         return "[SQLITE - ERROR] SQLException";
       }
    }
 }

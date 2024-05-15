@@ -42,6 +42,11 @@ public class Endpoints {
         return material.addMaterial();
     }
 
+    @GetMapping("/materials")
+    String getMaterials() {
+        return Material.getMaterials();
+    }
+
     @PostMapping("/storage")
     String addToStorage(@RequestBody String request) {
         Storage storageItem = new Storage();
@@ -50,6 +55,8 @@ public class Endpoints {
         storageItem.length = Integer.parseInt(getJSONValue("length", request));
         storageItem.width = Integer.parseInt(getJSONValue("width", request));
         storageItem.price = Float.parseFloat(getJSONValue("price", request));
+        storageItem.quantity = Integer.parseInt(getJSONValue("quantity", request));
+        storageItem.thickness = Integer.parseInt(getJSONValue("thickness", request));
 
         return storageItem.addItemToStorage();
     }
