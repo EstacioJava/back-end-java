@@ -2,6 +2,7 @@ package com.estacio.demo.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,13 +22,14 @@ public class Material {
       Database.connect();
 
       try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
-         response.put("name", name);
-         response.put("thickness", thickness);
-         
-         Statement stmt = connection.createStatement();
-         stmt.execute(String.format(Locale.US, "INSERT INTO materials (name, thickness) VALUES ('%s', %d)", name, thickness));
+         PreparedStatement pStmt = connection.prepareStatement("INSERT INTO materials (name, thickness) VALUES (?, ?)");
+         pStmt.setString(1, name);
+         pStmt.setInt(2, thickness);
+         pStmt.executeUpdate();
+
          System.out.println(String.format(Locale.US, "[SQLITE] %s :: %dmm", name, thickness));
-   
+
+         connection.close();
          return response.toString();
       } catch (SQLException error) {
          response.put("error", error.getMessage());
