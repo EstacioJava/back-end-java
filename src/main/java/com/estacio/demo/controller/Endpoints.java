@@ -48,8 +48,8 @@ public class Endpoints {
     @PostMapping("/materials")
     String registerMaterial(@RequestBody String request) {
         Material material = new Material();
-        material.name = getJSONValue("name", request);
-        material.thickness = Integer.parseInt(getJSONValue("thickness", request));
+        material.setName(getJSONValue("name", request));
+        material.setThickness(Integer.parseInt(getJSONValue("thickness", request)));
 
         return material.addMaterial();
     }
@@ -63,12 +63,12 @@ public class Endpoints {
     String addToStorage(@RequestBody String request) {
         Storage storageItem = new Storage();
 
-        storageItem.name = getJSONValue("name", request);
-        storageItem.length = Integer.parseInt(getJSONValue("length", request));
-        storageItem.width = Integer.parseInt(getJSONValue("width", request));
-        storageItem.price = Float.parseFloat(getJSONValue("price", request));
-        storageItem.quantity = Integer.parseInt(getJSONValue("quantity", request));
-        storageItem.thickness = Integer.parseInt(getJSONValue("thickness", request));
+        storageItem.setName(getJSONValue("name", request));
+        storageItem.setLength(Integer.parseInt(getJSONValue("length", request)));
+        storageItem.setWidth(Integer.parseInt(getJSONValue("width", request)));
+        storageItem.setPrice(Float.parseFloat(getJSONValue("price", request)));
+        storageItem.setQuantity(Integer.parseInt(getJSONValue("quantity", request)));
+        storageItem.setThickness(Integer.parseInt(getJSONValue("thickness", request)));
 
         return storageItem.addItemToStorage();
     }
@@ -102,10 +102,10 @@ public class Endpoints {
     String addClient(@RequestBody String request){
         Client client = new Client();
 
-        client.name = getJSONValue("name", request);
-        client.cpf = getJSONValue("cpf", request);
-        client.cel = getJSONValue("cel", request);
-        client.email = getJSONValue("email", request);
+        client.setName(getJSONValue("name", request));
+        client.setCpf(getJSONValue("cpf", request));
+        client.setCel(getJSONValue("cel", request));
+        client.setEmail(getJSONValue("email", request));
 
         return client.addClient();
     }
@@ -114,30 +114,27 @@ public class Endpoints {
     public String updateClient(@PathVariable Integer id, @RequestBody String request) {
         Client client = new Client();
 
-        client.name = getJSONValue("name", request);
-        client.cpf = getJSONValue("cpf", request);
-        client.cel = getJSONValue("cel", request);
-        client.email = getJSONValue("email", request);
+        client.setName(getJSONValue("name", request));
+        client.setCpf(getJSONValue("cpf", request));
+        client.setCel(getJSONValue("cel", request));
+        client.setEmail(getJSONValue("email", request));
 
         return client.updateClient(id);
     }
     String updateClient(@RequestBody String request){
         Order order = new Order();
 
-        order.clientID = Integer.parseInt(getJSONValue("clientID", request));
-        order.status = getJSONValue("status", request);
-        order.description = getJSONValue("description", request);
-        
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         dateFormatter = dateFormatter.withLocale( Locale.US );
-
         String strOrderDate = getJSONValue("orderDate", request);
-        String deliveryDate = getJSONValue("deliveryDate", request);
+        String strDeliveryDate = getJSONValue("deliveryDate", request);
 
-        order.orderDate = LocalDate.parse(strOrderDate, dateFormatter);
-        order.deliveryDate = LocalDate.parse(deliveryDate, dateFormatter);
-
-        order.finalPrice = Float.parseFloat(getJSONValue("finalPrice", request));
+        order.setClientID(Integer.parseInt(getJSONValue("clientID", request)));
+        order.setStatus(getJSONValue("status", request));
+        order.setDescription(getJSONValue("description", request));
+        order.setOrderDate(LocalDate.parse(strOrderDate, dateFormatter));
+        order.setDeliveryDate(LocalDate.parse(strDeliveryDate, dateFormatter));
+        order.setFinalPrice(Float.parseFloat(getJSONValue("finalPrice", request)));
 
         return order.addOrder();
     }
@@ -151,20 +148,17 @@ public class Endpoints {
     String addOrder(@RequestBody String request){
         Order order = new Order();
 
-        order.clientID = Integer.parseInt(getJSONValue("clientID", request));
-        order.status = getJSONValue("status", request);
-        order.description = getJSONValue("description", request);
-        
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         dateFormatter = dateFormatter.withLocale( Locale.US );
-
         String strOrderDate = getJSONValue("orderDate", request);
-        String deliveryDate = getJSONValue("deliveryDate", request);
+        String strDeliveryDate = getJSONValue("deliveryDate", request);
 
-        order.orderDate = LocalDate.parse(strOrderDate, dateFormatter);
-        order.deliveryDate = LocalDate.parse(deliveryDate, dateFormatter);
-
-        order.finalPrice = Float.parseFloat(getJSONValue("finalPrice", request));
+        order.setClientID(Integer.parseInt(getJSONValue("clientID", request)));
+        order.setStatus(getJSONValue("status", request));
+        order.setDescription(getJSONValue("description", request));
+        order.setOrderDate(LocalDate.parse(strOrderDate, dateFormatter));
+        order.setDeliveryDate(LocalDate.parse(strDeliveryDate, dateFormatter));
+        order.setFinalPrice(Float.parseFloat(getJSONValue("finalPrice", request)));
 
         return order.addOrder();
     }

@@ -12,11 +12,22 @@ import org.json.JSONObject;
 
 import com.estacio.demo.controller.Database;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Client{
-    public String name;
-    public String cpf;
-    public String email;
-    public String cel;
+    private String name;
+    private String cpf;
+    private String email;
+    private String cel;
 
     public String addClient(){
         JSONObject response = new JSONObject();
@@ -40,6 +51,9 @@ public class Client{
         }
     }
 
+
+
+    
     public static String getClients(){
         JSONArray allClientsArray = new JSONArray();
         Database.connect();
@@ -65,6 +79,8 @@ public class Client{
         }
     }
 
+
+
     public String updateClient(Integer id){
         JSONObject response = new JSONObject();
         Database.connect();
@@ -87,4 +103,5 @@ public class Client{
             return response.toString();
         }
     }
+
 }

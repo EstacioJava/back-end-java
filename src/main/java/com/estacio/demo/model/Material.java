@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Locale;
 
 import org.json.JSONArray;
@@ -13,9 +12,20 @@ import org.json.JSONObject;
 
 import com.estacio.demo.controller.Database;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Material {
-   public String name = null;
-   public Integer thickness = null;
+   
+   private String name = null;
+   private Integer thickness = null;
 
    public String addMaterial () {
       JSONObject response = new JSONObject();

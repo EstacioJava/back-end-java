@@ -11,13 +11,24 @@ import com.estacio.demo.controller.Database;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Storage {
-   public String name = null;
-   public Integer thickness = null;
-   public Integer length = null;
-   public Integer width = null;
-   public Integer quantity = null;
-   public Float price = null;
+   private String name = null;
+   private Integer thickness = null;
+   private Integer length = null;
+   private Integer width = null;
+   private Integer quantity = null;
+   private Float price = null;
 
    public String addItemToStorage () {
       JSONObject response = new JSONObject();

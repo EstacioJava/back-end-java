@@ -10,21 +10,30 @@ import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.data.annotation.Id;
+
 
 import com.estacio.demo.controller.Database;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Order {
-    @Id
-    public int id;
-    public Integer clientID;
-    public Storage storage;
-    public String status;
-    public String description;
-    public LocalDate orderDate;
-    public LocalDate deliveryDate;
-    public Float finalPrice;
+
+    private Integer clientID;
+    private Storage storage;
+    private String status;
+    private String description;
+    private LocalDate orderDate;
+    private LocalDate deliveryDate;
+    private Float finalPrice;
 
     public String addOrder(){
         JSONObject response = new JSONObject();
