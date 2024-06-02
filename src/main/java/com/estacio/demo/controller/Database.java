@@ -17,7 +17,11 @@ public class Database {
          );
 
          stmt.execute(
-            "CREATE TABLE IF NOT EXISTS materials (ID INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL, thickness INTEGER NOT NULL);"
+            "CREATE TABLE IF NOT EXISTS materials (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL, thickness INTEGER NOT NULL);"
+         );
+
+         stmt.execute(
+            "CREATE TABLE IF NOT EXISTS clients (id INTEGER PRIMARY KEY AUTOINCREMENT,  name VARCHAR(255) NOT NULL, cpf VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, cel VARCHAR(255) NOT NULL);"
          );
 
          response.put("message", "Successfully connected to the database.");

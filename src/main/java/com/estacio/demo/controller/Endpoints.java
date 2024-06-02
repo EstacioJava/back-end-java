@@ -2,7 +2,10 @@ package com.estacio.demo.controller;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.estacio.demo.model.Client;
 import com.estacio.demo.model.Material;
+import com.estacio.demo.model.Order;
 import com.estacio.demo.model.Storage;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -50,6 +53,13 @@ public class Endpoints {
         return Material.getMaterials();
     }
 
+
+
+
+
+
+
+
     @PostMapping("/storage")
     String addToStorage(@RequestBody String request) {
         Storage storageItem = new Storage();
@@ -82,5 +92,48 @@ public class Endpoints {
     @DeleteMapping("/storage/{id}") 
     String deleteStorageItemByID(@PathVariable String id) {
         return Storage.deleteStorageItemByID(id);
+    }
+
+
+
+
+
+
+
+    @GetMapping("/clients")
+    String getClients(){
+        return Client.getClients();
+    }
+
+    @PostMapping("/clients")
+    String addClient(@RequestBody String request){
+        Client client = new Client();
+
+        client.name = getJSONValue("name", request);
+        client.cpf = getJSONValue("cpf", request);
+        client.cel = getJSONValue("email", request);
+        client.email = getJSONValue("cel", request);
+
+        return client.addClient();
+    }
+
+
+
+    @GetMapping("/orders")
+    String getOrders(){
+        return Order.getOrders();
+    }
+
+    @PostMapping("/orders")
+    String addOrder(@RequestBody String request){
+        Order order = new Order();
+
+        order.status = getJSONValue("status", request);
+        order.description = getJSONValue("description", request);
+        order.orderDate = getJSONValue("orderDate", request);
+        order.deliveryDate = getJSONValue("deliveryDate", request);
+        order.finalPrice = Float.parseFloat(getJSONValue("finalPrice", request));
+
+        return order.addOrder();
     }
 }
