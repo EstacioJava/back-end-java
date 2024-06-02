@@ -1,5 +1,9 @@
 package com.estacio.demo.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 /**
@@ -53,13 +59,6 @@ public class Endpoints {
         return Material.getMaterials();
     }
 
-
-
-
-
-
-
-
     @PostMapping("/storage")
     String addToStorage(@RequestBody String request) {
         Storage storageItem = new Storage();
@@ -94,12 +93,6 @@ public class Endpoints {
         return Storage.deleteStorageItemByID(id);
     }
 
-
-
-
-
-
-
     @GetMapping("/clients")
     String getClients(){
         return Client.getClients();
@@ -111,13 +104,43 @@ public class Endpoints {
 
         client.name = getJSONValue("name", request);
         client.cpf = getJSONValue("cpf", request);
-        client.cel = getJSONValue("email", request);
-        client.email = getJSONValue("cel", request);
+        client.cel = getJSONValue("cel", request);
+        client.email = getJSONValue("email", request);
 
         return client.addClient();
     }
 
+    @PutMapping("/clients/{id}")
+    public String updateClient(@PathVariable Integer id, @RequestBody String request) {
+        Client client = new Client();
 
+        client.name = getJSONValue("name", request);
+        client.cpf = getJSONValue("cpf", request);
+        client.cel = getJSONValue("cel", request);
+        client.email = getJSONValue("email", request);
+
+        return client.updateClient(id);
+    }
+    String updateClient(@RequestBody String request){
+        Order order = new Order();
+
+        order.clientID = Integer.parseInt(getJSONValue("clientID", request));
+        order.status = getJSONValue("status", request);
+        order.description = getJSONValue("description", request);
+        
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        dateFormatter = dateFormatter.withLocale( Locale.US );
+
+        String strOrderDate = getJSONValue("orderDate", request);
+        String deliveryDate = getJSONValue("deliveryDate", request);
+
+        order.orderDate = LocalDate.parse(strOrderDate, dateFormatter);
+        order.deliveryDate = LocalDate.parse(deliveryDate, dateFormatter);
+
+        order.finalPrice = Float.parseFloat(getJSONValue("finalPrice", request));
+
+        return order.addOrder();
+    }
 
     @GetMapping("/orders")
     String getOrders(){
@@ -128,10 +151,19 @@ public class Endpoints {
     String addOrder(@RequestBody String request){
         Order order = new Order();
 
+        order.clientID = Integer.parseInt(getJSONValue("clientID", request));
         order.status = getJSONValue("status", request);
         order.description = getJSONValue("description", request);
-        order.orderDate = getJSONValue("orderDate", request);
-        order.deliveryDate = getJSONValue("deliveryDate", request);
+        
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        dateFormatter = dateFormatter.withLocale( Locale.US );
+
+        String strOrderDate = getJSONValue("orderDate", request);
+        String deliveryDate = getJSONValue("deliveryDate", request);
+
+        order.orderDate = LocalDate.parse(strOrderDate, dateFormatter);
+        order.deliveryDate = LocalDate.parse(deliveryDate, dateFormatter);
+
         order.finalPrice = Float.parseFloat(getJSONValue("finalPrice", request));
 
         return order.addOrder();

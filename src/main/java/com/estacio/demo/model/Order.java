@@ -2,7 +2,6 @@ package com.estacio.demo.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,23 +16,22 @@ import com.estacio.demo.controller.Database;
 
 
 public class Order {
-
     @Id
     public int id;
-
-    public Client client;
+    public Integer clientID;
     public Storage storage;
     public String status;
     public String description;
     public LocalDate orderDate;
     public LocalDate deliveryDate;
-    public float finalPrice;
+    public Float finalPrice;
 
     public String addOrder(){
         JSONObject response = new JSONObject();
         Database.connect();
 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
+            response.put("clientID", clientID);
             response.put("status", status);
             response.put("description", description);
             response.put("orderDate", orderDate);
@@ -41,8 +39,8 @@ public class Order {
             response.put("finalPrice", finalPrice);
 
             Statement stmt = connection.createStatement();
-            stmt.execute(String.format(Locale.US, "INSERT INTO orders (status, description, orderDate, deliveryDate, finalPrice) VALUES ('%s', '%s', '%s', '%s', %.2f)", description, orderDate, deliveryDate, finalPrice));
-            System.out.println(String.format(Locale.US, "[SQLITE] %s :: %s :: %s :: %s:: R$ %f", status, description, orderDate, deliveryDate, finalPrice));
+            System.out.println(String.format(Locale.US, "[SQLITE] %d :: %s :: %s :: %s :: %s:: R$ %.2f", clientID, status, description, orderDate, deliveryDate, finalPrice));
+            stmt.execute(String.format(Locale.US, "INSERT INTO orders (clientID, status, description, orderDate, deliveryDate, finalPrice) VALUES (%d, '%s', '%s', '%s', '%s', %.2f)", clientID, status, description, orderDate, deliveryDate, finalPrice));
         
             return response.toString();
         }catch(SQLException error){
@@ -52,7 +50,7 @@ public class Order {
         }
     }
 
-    public String getOrders(){
+    public static String getOrders(){
         JSONArray allOrdersArray = new JSONArray();
         Database.connect();
 
@@ -61,6 +59,8 @@ public class Order {
             
             while(allOrders.next()){
                 JSONObject currentOrder = new JSONObject();
+                currentOrder.put("id", allOrders.getInt("id"));
+                currentOrder.put("clientID", allOrders.getInt("clientID"));
                 currentOrder.put("status", allOrders.getString("status"));
                 currentOrder.put("description", allOrders.getString("description"));
                 currentOrder.put("orderDate", allOrders.getString("orderDate"));
