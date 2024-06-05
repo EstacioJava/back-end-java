@@ -1,6 +1,7 @@
 package com.estacio.demo.model;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -151,4 +152,41 @@ public class Storage {
          return response.toString();
       }
    }
+
+   public String updateStorageItem(Integer id) {
+        JSONObject response = new JSONObject();
+        Database.connect();
+
+        String updateSQL = "UPDATE storage SET name = ?, thickness = ?, length = ?, width = ?, quantity = ?, price = ? WHERE id = ?";
+
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
+             PreparedStatement pstmt = connection.prepareStatement(updateSQL)){
+
+            pstmt.setString(1, name);
+            pstmt.setInt(2, thickness);
+            pstmt.setInt(3, length);
+            pstmt.setInt(4, width);
+            pstmt.setInt(5, quantity);
+            pstmt.setFloat(6, price);
+            pstmt.setInt(7, id);
+
+            pstmt.executeUpdate();
+
+            response.put("id", id);
+            response.put("name", name);
+            response.put("thickness", thickness);
+            response.put("length", length);
+            response.put("width", width);
+            response.put("quantity", quantity);
+            response.put("price", price);
+
+            System.out.println(String.format(Locale.US,"[SQLITE::UPDATE STORAGE] %s :: %d :: %d :: %d :: %d :: %f", name, thickness, length, width, quantity, price));
+
+            return response.toString();
+        } catch (SQLException error) {
+            response.put("error", error.getMessage());
+            System.out.println(error.getMessage());
+            return response.toString();
+        }
+    }
 }

@@ -45,8 +45,25 @@ public class Endpoints {
         }
     }
 
+
+
+
+
+
+    //materials
+
+    @GetMapping("/materials")
+    String getMaterials() {
+        return Material.getMaterials();
+    }
+
+    @GetMapping("/materials/{id}")
+    String getMaterialById(@PathVariable("id") Integer id) {
+        return Material.getMaterialById();
+    }
+
     @PostMapping("/materials")
-    String registerMaterial(@RequestBody String request) {
+    String addMaterial(@RequestBody String request) {
         Material material = new Material();
         material.setName(getJSONValue("name", request));
         material.setThickness(Integer.parseInt(getJSONValue("thickness", request)));
@@ -54,13 +71,44 @@ public class Endpoints {
         return material.addMaterial();
     }
 
-    @GetMapping("/materials")
-    String getMaterials() {
-        return Material.getMaterials();
+    @PutMapping("/materials/{id}")
+    String updateMaterial(@PathVariable("id") Integer id, @RequestBody String request) {
+        Material material = new Material();
+        material.setName(getJSONValue("name", request));
+        material.setThickness(Integer.parseInt(getJSONValue("thickness", request)));
+
+        return material.updateMaterial(id);
+    }
+
+    @DeleteMapping("/materials") 
+    String deleteMaterial() {
+        return Storage.deleteAllMaterials();
+    }
+    
+    @DeleteMapping("/materials/{id}") 
+    String deleteMaterialByID(@PathVariable String id) {
+        return Storage.deleteMaterialByID(id);
+    }
+
+    
+
+
+
+
+    //storage
+
+    @GetMapping("/storage")
+    String getStorageItems() {
+        return Storage.getStorageItems();
+    }
+    
+    @GetMapping("/storage/{id}")
+    String getStorageItemById(@PathVariable("id") String id) {
+        return Storage.getStorageItemById(id);
     }
 
     @PostMapping("/storage")
-    String addToStorage(@RequestBody String request) {
+    String addItemToStorage(@RequestBody String request) {
         Storage storageItem = new Storage();
 
         storageItem.setName(getJSONValue("name", request));
@@ -73,19 +121,23 @@ public class Endpoints {
         return storageItem.addItemToStorage();
     }
 
-    @GetMapping("/storage")
-    String getStorageItems() {
-        return Storage.getStorageItems();
-    }
-    
-    @GetMapping("/storage/{id}")
-    String getSingleStorageItem(@PathVariable("id") String id) {
-        return Storage.getSingleStorageItem(id);
+    @PutMapping("/storage/{id}")
+    String updateStorageItem(@PathVariable("id") Integer id, @RequestBody String request) {
+        Storage storageItem = new Storage();
+
+        storageItem.setName(getJSONValue("name", request));
+        storageItem.setLength(Integer.parseInt(getJSONValue("length", request)));
+        storageItem.setWidth(Integer.parseInt(getJSONValue("width", request)));
+        storageItem.setPrice(Float.parseFloat(getJSONValue("price", request)));
+        storageItem.setQuantity(Integer.parseInt(getJSONValue("quantity", request)));
+        storageItem.setThickness(Integer.parseInt(getJSONValue("thickness", request)));
+
+        return storageItem.updateStorageItem(id);
     }
 
     @DeleteMapping("/storage") 
-    String clearStorage() {
-        return Storage.clearStorage();
+    String deleteStorages() {
+        return Storage.deleteAllStorageItems();
     }
     
     @DeleteMapping("/storage/{id}") 
@@ -93,9 +145,22 @@ public class Endpoints {
         return Storage.deleteStorageItemByID(id);
     }
 
+
+
+
+
+
+
+
+    //clients
     @GetMapping("/clients")
     String getClients(){
         return Client.getClients();
+    }
+
+    @GetMapping("/clients/{id}")
+    String getClientsById(@PathVariable Integer id){
+        return Client.getClientById(id);
     }
 
     @PostMapping("/clients")
@@ -121,34 +186,38 @@ public class Endpoints {
 
         return client.updateClient(id);
     }
-    String updateClient(@RequestBody String request){
-        Order order = new Order();
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        dateFormatter = dateFormatter.withLocale( Locale.US );
-        String strOrderDate = getJSONValue("orderDate", request);
-        String strDeliveryDate = getJSONValue("deliveryDate", request);
-
-        order.setClientID(Integer.parseInt(getJSONValue("clientID", request)));
-        order.setStatus(getJSONValue("status", request));
-        order.setDescription(getJSONValue("description", request));
-        order.setOrderDate(LocalDate.parse(strOrderDate, dateFormatter));
-        order.setDeliveryDate(LocalDate.parse(strDeliveryDate, dateFormatter));
-        order.setFinalPrice(Float.parseFloat(getJSONValue("finalPrice", request)));
-
-        return order.addOrder();
+    @DeleteMapping("/clients/{id}") 
+    String deleteClientById(@PathVariable Integer id) {
+        return Client.deleteClientById(id);
     }
 
+    @DeleteMapping("/clients") 
+    String deleteClients() {
+        return Client.deleteAllClients();
+    }
+
+    
+
+
+
+
+    //orders
     @GetMapping("/orders")
     String getOrders(){
         return Order.getOrders();
+    }
+
+    @GetMapping("/orders/{id}")
+    String getOrdersById(@PathVariable Integer id){
+        return Order.getOrderById(id);
     }
 
     @PostMapping("/orders")
     String addOrder(@RequestBody String request){
         Order order = new Order();
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         dateFormatter = dateFormatter.withLocale( Locale.US );
         String strOrderDate = getJSONValue("orderDate", request);
         String strDeliveryDate = getJSONValue("deliveryDate", request);
@@ -161,5 +230,34 @@ public class Endpoints {
         order.setFinalPrice(Float.parseFloat(getJSONValue("finalPrice", request)));
 
         return order.addOrder();
+    }
+
+    @PutMapping("/orders/{id}")
+    public String updateOrder(@PathVariable Integer id, @RequestBody String request){
+        Order order = new Order();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        dateFormatter = dateFormatter.withLocale( Locale.US );
+        String strOrderDate = getJSONValue("orderDate", request);
+        String strDeliveryDate = getJSONValue("deliveryDate", request);
+
+        order.setClientID(Integer.parseInt(getJSONValue("clientID", request)));
+        order.setStatus(getJSONValue("status", request));
+        order.setDescription(getJSONValue("description", request));
+        order.setOrderDate(LocalDate.parse(strOrderDate, dateFormatter));
+        order.setDeliveryDate(LocalDate.parse(strDeliveryDate, dateFormatter));
+        order.setFinalPrice(Float.parseFloat(getJSONValue("finalPrice", request)));
+
+        return order.updateOrder(id);
+    }
+
+    @DeleteMapping("/orders/{id}") 
+    String deleteOrderById(@PathVariable Integer id) {
+        return Order.deleteOrderById(id);
+    }
+
+    @DeleteMapping("/orders") 
+    String deleteOrders() {
+        return Order.deleteAllOrders();
     }
 }
