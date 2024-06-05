@@ -59,7 +59,7 @@ public class Endpoints {
 
     @GetMapping("/materials/{id}")
     String getMaterialById(@PathVariable("id") Integer id) {
-        return Material.getMaterialById();
+        return Material.getMaterialById(id);
     }
 
     @PostMapping("/materials")
@@ -82,12 +82,12 @@ public class Endpoints {
 
     @DeleteMapping("/materials") 
     String deleteMaterial() {
-        return Storage.deleteAllMaterials();
+        return Material.deleteAllMaterials();
     }
     
     @DeleteMapping("/materials/{id}") 
-    String deleteMaterialByID(@PathVariable String id) {
-        return Storage.deleteMaterialByID(id);
+    String deleteMaterialByI(@PathVariable Integer id) {
+        return Material.deleteMaterialById(id);
     }
 
     
@@ -103,7 +103,7 @@ public class Endpoints {
     }
     
     @GetMapping("/storage/{id}")
-    String getStorageItemById(@PathVariable("id") String id) {
+    String getStorageItemById(@PathVariable("id") Integer id) {
         return Storage.getStorageItemById(id);
     }
 
@@ -141,8 +141,8 @@ public class Endpoints {
     }
     
     @DeleteMapping("/storage/{id}") 
-    String deleteStorageItemByID(@PathVariable String id) {
-        return Storage.deleteStorageItemByID(id);
+    String deleteStorageItemByID(@PathVariable Integer id) {
+        return Storage.deleteStorageItemById(id);
     }
 
 

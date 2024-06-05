@@ -31,162 +31,213 @@ public class Storage {
    private Integer quantity = null;
    private Float price = null;
 
-   public String addItemToStorage () {
+   public String addItemToStorage() {
       JSONObject response = new JSONObject();
       Database.connect();
 
-      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
-         response.put("name", name);
-         response.put("length", length);
-         response.put("width", width);
-         response.put("price", price);
-         response.put("quantity", quantity);
-         response.put("thickness", thickness);
-         
-         Statement stmt = connection.createStatement();
-         if (name != null && length != null && width != null && price != null && quantity != null && thickness != null) {
-            stmt.execute(String.format(Locale.US, "INSERT INTO storage (name, price, length, width, quantity, thickness) VALUES ('%s', %.2f, %d, %d, %d, %d)", name, price, length, width, quantity, thickness));
-            System.out.println(String.format(Locale.US, "[SQLITE] %s :: %dmm x %dmm x %dmm -  R$ %f (%dx)", name, length, width, thickness, price, quantity));
-         } else {
-            System.out.println(String.format(Locale.US, "[SQLITE] %s :: %dmm x %dmm x %dmm -  R$ %f (%dx)", name, length, width, thickness, price, quantity));
-            return response.put("error", "[SQLITE::ERROR] There are propeties missing.").toString();
-         } 
-   
-         return response.toString();
-      } catch (SQLException error) {
-         response.put("error", error.getMessage());
-         System.out.println(error.getMessage());
-         return response.toString();
-      }
-   }
+      String querySQL = "INSERT INTO storage (name, thickness, length, width, quantity, price) VALUES (?, ?, ?, ?, ?, ?)";
 
-   public static String getStorageItems () {
-      JSONArray materials = new JSONArray();
+      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
+           PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
+
+          pstmt.setString(1, name);
+          pstmt.setInt(2, thickness);
+          pstmt.setInt(3, length);
+          pstmt.setInt(4, width);
+          pstmt.setInt(5, quantity);
+          pstmt.setFloat(6, price);
+
+          pstmt.executeUpdate();
+
+          response.put("name", name);
+          response.put("thickness", thickness);
+          response.put("length", length);
+          response.put("width", width);
+          response.put("quantity", quantity);
+          response.put("price", price);
+
+          System.out.println(String.format(Locale.US, "[SQLITE] %s :: %d :: %d :: %d :: %d :: %.2f", name, thickness, length, width, quantity, price));
+      
+          return response.toString();
+      } catch (SQLException error) {
+          response.put("error", error.getMessage());
+          System.out.println(error.getMessage());
+          return response.toString();
+      }
+  }
+
+
+   public static String getStorageItems() {
+      JSONArray allStorageItemsArray = new JSONArray();
       Database.connect();
 
-      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
-         ResultSet allItems = connection.prepareStatement("SELECT * FROM storage").executeQuery();
-   
-         while (allItems.next()) {
-            JSONObject currentMaterial = new JSONObject();
+      String querySQL = "SELECT * FROM storage";
 
-            currentMaterial.put("id", allItems.getString("id"));
-            currentMaterial.put("name", allItems.getString("name"));
-            currentMaterial.put("length", allItems.getInt("length"));
-            currentMaterial.put("width", allItems.getInt("width"));
-            currentMaterial.put("price", allItems.getFloat("price"));
-            currentMaterial.put("quantity", allItems.getInt("quantity"));
-            currentMaterial.put("thickness", allItems.getInt("thickness"));
+      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
+         PreparedStatement pstmt = connection.prepareStatement(querySQL);
+         ResultSet allStorageItems = pstmt.executeQuery()) {
 
-            materials.put(currentMaterial);
-         }
-         
-         return materials.toString();
-      } catch (SQLException error) {
-         System.out.println(error.getMessage());
-         return "[SQLITE - ERROR] SQLException";
-      }
-   }
+         while (allStorageItems.next()) {
+            JSONObject currentStorageItem = new JSONObject();
+            currentStorageItem.put("id", allStorageItems.getInt("id"));
+            currentStorageItem.put("name", allStorageItems.getString("name"));
+            currentStorageItem.put("thickness", allStorageItems.getInt("thickness"));
+            currentStorageItem.put("length", allStorageItems.getInt("length"));
+            currentStorageItem.put("width", allStorageItems.getInt("width"));
+            currentStorageItem.put("quantity", allStorageItems.getInt("quantity"));
+            currentStorageItem.put("price", allStorageItems.getFloat("price"));
 
-   public static String getSingleStorageItem (String materialID) {
-      JSONObject material = new JSONObject();
-      Database.connect();
-
-      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
-         Statement stmt = connection.createStatement();
-         ResultSet chosenMaterial = stmt.executeQuery(String.format("SELECT * FROM storage WHERE id = %s", materialID));
-         System.out.println(chosenMaterial);
-   
-         while (chosenMaterial.next()) {
-            material.put("id", chosenMaterial.getString("id"));
-            material.put("name", chosenMaterial.getString("name"));
-            material.put("length", chosenMaterial.getInt("length"));
-            material.put("width", chosenMaterial.getInt("width"));
-            material.put("price", chosenMaterial.getFloat("price"));
-            material.put("thickness", chosenMaterial.getInt("thickness"));
-            material.put("quantity", chosenMaterial.getInt("quantity"));
+            allStorageItemsArray.put(currentStorageItem);
          }
 
-         return material.toString();
+         return allStorageItemsArray.toString();
       } catch (SQLException error) {
          System.out.println(error.getMessage());
-         return "[SQLITE - ERROR] SQLException";
+         return "[SQLITE - ERROR] SQLException: " + error.getMessage();
       }
    }
 
-   public static String clearStorage () {
-      JSONObject response = new JSONObject();
+   public static String getStorageItemById(Integer id) {
+      JSONObject storageItemsDetail = new JSONObject();
       Database.connect();
 
-      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
-         Statement stmt = connection.createStatement();
-         stmt.execute("DELETE FROM storage");
-         response.put("message", "Table storage cleared.");
-         return response.toString();
-      } catch (SQLException error) {
-         response.put("error", error.getMessage());
-         System.out.println(error.getMessage());
-         return response.toString();
-      }
-   }
-   
-   public static String deleteStorageItemByID (String id) {
-      JSONObject response = new JSONObject();
-      Database.connect();
+      String querySQL = "SELECT * FROM storage WHERE id = ?";
 
-      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
-         Statement stmt = connection.createStatement();
-         ResultSet itemToDelete = stmt.executeQuery(String.format("SELECT name FROM storage WHERE id = %s", id));
-         
-         if (itemToDelete.getString("name") != null) {
-            stmt.execute(String.format("DELETE FROM storage WHERE id = %s", id));
-            response.put("message", String.format("Item with ID %s deleted from the database.", id));
-         } else {
-            response.put("error", String.format("No item with ID %s found.", id));
-         }
+      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
+           PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
 
-         return response.toString();
+          pstmt.setInt(1, id);
+
+          ResultSet resultSet = pstmt.executeQuery();
+
+          if (resultSet.next()) {
+              storageItemsDetail.put("id", resultSet.getInt("id"));
+              storageItemsDetail.put("name", resultSet.getString("name"));
+              storageItemsDetail.put("thickness", resultSet.getInt("thickness"));
+              storageItemsDetail.put("length", resultSet.getInt("length"));
+              storageItemsDetail.put("width", resultSet.getInt("width"));
+              storageItemsDetail.put("quantity", resultSet.getInt("quantity"));
+              storageItemsDetail.put("price", resultSet.getFloat("price"));
+
+              return storageItemsDetail.toString();
+          } else {
+              return "ID not found";
+          }
+
       } catch (SQLException error) {
-         response.put("error", error.getMessage());
-         System.out.println(error.getMessage());
-         return response.toString();
+          System.out.println(error.getMessage());
+          return "[SQLITE - ERROR] SQLException: " + error.getMessage();
       }
    }
 
    public String updateStorageItem(Integer id) {
-        JSONObject response = new JSONObject();
-        Database.connect();
+      JSONObject response = new JSONObject();
+      Database.connect();
 
-        String updateSQL = "UPDATE storage SET name = ?, thickness = ?, length = ?, width = ?, quantity = ?, price = ? WHERE id = ?";
+      String checkSQL = "SELECT id FROM storage WHERE id = ?";
+      String updateSQL = "UPDATE storage SET name = ?, thickness = ?, length = ?, width = ?, quantity = ?, price = ? WHERE id = ?";
 
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
-             PreparedStatement pstmt = connection.prepareStatement(updateSQL)){
+      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
+           PreparedStatement checkStmt = connection.prepareStatement(checkSQL);
+           PreparedStatement updateStmt = connection.prepareStatement(updateSQL)) {
 
-            pstmt.setString(1, name);
-            pstmt.setInt(2, thickness);
-            pstmt.setInt(3, length);
-            pstmt.setInt(4, width);
-            pstmt.setInt(5, quantity);
-            pstmt.setFloat(6, price);
-            pstmt.setInt(7, id);
+          checkStmt.setInt(1, id);
+          ResultSet resultSet = checkStmt.executeQuery();
 
-            pstmt.executeUpdate();
+          if (!resultSet.next()) {
+              response.put("error", "ID not found");
+              System.out.println(String.format(Locale.US, "[SQLITE::CHECK STORAGE ITEM] Storage Item ID: %d not found", id));
+              return response.toString();
+          }
 
-            response.put("id", id);
-            response.put("name", name);
-            response.put("thickness", thickness);
-            response.put("length", length);
-            response.put("width", width);
-            response.put("quantity", quantity);
-            response.put("price", price);
+          updateStmt.setString(1, name);
+          updateStmt.setInt(2, thickness);
+          updateStmt.setInt(3, length);
+          updateStmt.setInt(4, width);
+          updateStmt.setInt(5, quantity);
+          updateStmt.setFloat(6, price);
+          updateStmt.setInt(7, id);
 
-            System.out.println(String.format(Locale.US,"[SQLITE::UPDATE STORAGE] %s :: %d :: %d :: %d :: %d :: %f", name, thickness, length, width, quantity, price));
+          updateStmt.executeUpdate();
 
-            return response.toString();
-        } catch (SQLException error) {
-            response.put("error", error.getMessage());
-            System.out.println(error.getMessage());
-            return response.toString();
-        }
-    }
+          response.put("id", id);
+          response.put("name", name);
+          response.put("thickness", thickness);
+          response.put("length", length);
+          response.put("width", width);
+          response.put("quantity", quantity);
+          response.put("price", price);
+
+          System.out.println(String.format(Locale.US, "[SQLITE::UPDATE STORAGE ITEM] %d :: %s :: %d :: %d :: %d :: %d :: %.2f", id, name, thickness, length, width, quantity, price));
+
+          return response.toString();
+      } catch (SQLException error) {
+          response.put("error", error.getMessage());
+          System.out.println(error.getMessage());
+          return response.toString();
+      }
+   }
+
+   public static String deleteStorageItemById(Integer id) {
+      JSONObject response = new JSONObject();
+      Database.connect();
+
+      String checkSQL = "SELECT id FROM storage WHERE id = ?";
+      String deleteSQL = "DELETE FROM storage WHERE id = ?";
+
+      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
+           PreparedStatement checkStmt = connection.prepareStatement(checkSQL);
+           PreparedStatement deleteStmt = connection.prepareStatement(deleteSQL)) {
+
+          checkStmt.setInt(1, id);
+          ResultSet resultSet = checkStmt.executeQuery();
+
+          if (!resultSet.next()) {
+              response.put("error", "ID not found");
+              System.out.println(String.format(Locale.US, "[SQLITE::CHECK STORAGE ITEM] Storage ID: %d not found", id));
+              return response.toString();
+          }
+
+          deleteStmt.setInt(1, id);
+          deleteStmt.executeUpdate();
+
+          response.put("id", id);
+
+          System.out.println(String.format(Locale.US, "[SQLITE::DELETE STORAGE ITEM] Storage ID: %d", id));
+
+          return response.toString();
+      } catch (SQLException error) {
+          response.put("error", error.getMessage());
+          System.out.println(error.getMessage());
+          return response.toString();
+      }
+   }
+
+   public static String deleteAllStorageItems() {
+      JSONObject response = new JSONObject();
+      Database.connect();
+
+      String deleteSQL = "DELETE FROM storage";
+
+      try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
+           PreparedStatement pstmt = connection.prepareStatement(deleteSQL)) {
+
+          int rowsAffected = pstmt.executeUpdate();
+
+          response.put("rowsAffected", rowsAffected);
+          response.put("message", "All storage items have been successfully deleted.");
+
+          System.out.println(String.format(Locale.US, 
+              "[SQLITE::DELETE ALL STORAGES] Rows Deleted: %d", rowsAffected));
+
+          return response.toString();
+      } catch (SQLException error) {
+          System.out.println(error.getMessage());
+          response.put("error", error.getMessage());
+          return response.toString();
+      }
+   }
 }
+   
+  
+   

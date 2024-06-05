@@ -39,10 +39,10 @@ public class Order {
         JSONObject response = new JSONObject();
         Database.connect();
 
-        String insertSQL = "INSERT INTO orders (clientID, status, description, orderDate, deliveryDate, finalPrice) VALUES (?, ?, ?, ?, ?, ?)";
+        String querySQL = "INSERT INTO orders (clientID, status, description, orderDate, deliveryDate, finalPrice) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
-             PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
+             PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
 
             pstmt.setInt(1, clientID);
             pstmt.setString(2, status);
