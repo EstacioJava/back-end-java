@@ -2,6 +2,7 @@ package com.estacio.demo.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONException;
@@ -19,9 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -56,12 +54,10 @@ public class Endpoints {
     String getMaterials() {
         return Material.getMaterials();
     }
-
     @GetMapping("/materials/{id}")
     String getMaterialById(@PathVariable("id") Integer id) {
         return Material.getMaterialById(id);
     }
-
     @PostMapping("/materials")
     String addMaterial(@RequestBody String request) {
         Material material = new Material();
@@ -70,7 +66,6 @@ public class Endpoints {
 
         return material.addMaterial();
     }
-
     @PutMapping("/materials/{id}")
     String updateMaterial(@PathVariable("id") Integer id, @RequestBody String request) {
         Material material = new Material();
@@ -79,12 +74,10 @@ public class Endpoints {
 
         return material.updateMaterial(id);
     }
-
     @DeleteMapping("/materials") 
     String deleteMaterial() {
         return Material.deleteAllMaterials();
     }
-    
     @DeleteMapping("/materials/{id}") 
     String deleteMaterialByI(@PathVariable Integer id) {
         return Material.deleteMaterialById(id);
@@ -101,12 +94,10 @@ public class Endpoints {
     String getStorageItems() {
         return Storage.getStorageItems();
     }
-    
     @GetMapping("/storage/{id}")
     String getStorageItemById(@PathVariable("id") Integer id) {
         return Storage.getStorageItemById(id);
     }
-
     @PostMapping("/storage")
     String addItemToStorage(@RequestBody String request) {
         Storage storageItem = new Storage();
@@ -120,7 +111,6 @@ public class Endpoints {
 
         return storageItem.addItemToStorage();
     }
-
     @PutMapping("/storage/{id}")
     String updateStorageItem(@PathVariable("id") Integer id, @RequestBody String request) {
         Storage storageItem = new Storage();
@@ -134,12 +124,10 @@ public class Endpoints {
 
         return storageItem.updateStorageItem(id);
     }
-
     @DeleteMapping("/storage") 
     String deleteStorages() {
         return Storage.deleteAllStorageItems();
     }
-    
     @DeleteMapping("/storage/{id}") 
     String deleteStorageItemByID(@PathVariable Integer id) {
         return Storage.deleteStorageItemById(id);
@@ -157,12 +145,10 @@ public class Endpoints {
     String getClients(){
         return Client.getClients();
     }
-
     @GetMapping("/clients/{id}")
     String getClientsById(@PathVariable Integer id){
         return Client.getClientById(id);
     }
-
     @PostMapping("/clients")
     String addClient(@RequestBody String request){
         Client client = new Client();
@@ -174,7 +160,6 @@ public class Endpoints {
 
         return client.addClient();
     }
-
     @PutMapping("/clients/{id}")
     public String updateClient(@PathVariable Integer id, @RequestBody String request) {
         Client client = new Client();
@@ -186,12 +171,10 @@ public class Endpoints {
 
         return client.updateClient(id);
     }
-
     @DeleteMapping("/clients/{id}") 
     String deleteClientById(@PathVariable Integer id) {
         return Client.deleteClientById(id);
     }
-
     @DeleteMapping("/clients") 
     String deleteClients() {
         return Client.deleteAllClients();
@@ -207,12 +190,10 @@ public class Endpoints {
     String getOrders(){
         return Order.getOrders();
     }
-
     @GetMapping("/orders/{id}")
     String getOrdersById(@PathVariable Integer id){
         return Order.getOrderById(id);
     }
-
     @PostMapping("/orders")
     String addOrder(@RequestBody String request){
         Order order = new Order();
@@ -228,36 +209,36 @@ public class Endpoints {
         order.setOrderDate(LocalDate.parse(strOrderDate, dateFormatter));
         order.setDeliveryDate(LocalDate.parse(strDeliveryDate, dateFormatter));
         order.setFinalPrice(Float.parseFloat(getJSONValue("finalPrice", request)));
+        order.setLaborCost(Float.parseFloat(getJSONValue("laborCost", request)));
 
         return order.addOrder();
     }
-
     @PutMapping("/orders/{id}")
     public String updateOrder(@PathVariable Integer id, @RequestBody String request){
         Order order = new Order();
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         dateFormatter = dateFormatter.withLocale( Locale.US );
+
         String strOrderDate = getJSONValue("orderDate", request);
         String strDeliveryDate = getJSONValue("deliveryDate", request);
-
         order.setClientID(Integer.parseInt(getJSONValue("clientID", request)));
         order.setStatus(getJSONValue("status", request));
         order.setDescription(getJSONValue("description", request));
         order.setOrderDate(LocalDate.parse(strOrderDate, dateFormatter));
         order.setDeliveryDate(LocalDate.parse(strDeliveryDate, dateFormatter));
         order.setFinalPrice(Float.parseFloat(getJSONValue("finalPrice", request)));
+        order.setLaborCost(Float.parseFloat(getJSONValue("laborCost", request)));
 
         return order.updateOrder(id);
     }
-
     @DeleteMapping("/orders/{id}") 
     String deleteOrderById(@PathVariable Integer id) {
         return Order.deleteOrderById(id);
     }
-
     @DeleteMapping("/orders") 
     String deleteOrders() {
         return Order.deleteAllOrders();
     }
+
 }

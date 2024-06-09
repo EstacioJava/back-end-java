@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONArray;
@@ -34,12 +36,15 @@ public class Order {
     private LocalDate orderDate;
     private LocalDate deliveryDate;
     private Float finalPrice;
+    private Float laborCost;
+
 
     public String addOrder() {
         JSONObject response = new JSONObject();
-        Database.connect();
-
-        String querySQL = "INSERT INTO orders (clientID, status, description, orderDate, deliveryDate, finalPrice) VALUES (?, ?, ?, ?, ?, ?)";
+        Database.connect(); 
+        
+        calculateFinalPriceUsingItems(1,1);
+        String querySQL = "INSERT INTO orders (clientID, status, description, orderDate, deliveryDate, finalPrice, laborCost) VALUES (?, ?, ?, ?, ?, ?,?)";
 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
              PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
@@ -50,6 +55,8 @@ public class Order {
             pstmt.setString(4, orderDate.toString());
             pstmt.setString(5, deliveryDate.toString());
             pstmt.setFloat(6, finalPrice);
+            pstmt.setFloat(7, laborCost);
+
 
             pstmt.executeUpdate();
 
@@ -59,9 +66,10 @@ public class Order {
             response.put("orderDate", orderDate);
             response.put("deliveryDate", deliveryDate);
             response.put("finalPrice", finalPrice);
+            response.put("laborCost", laborCost);
             
             System.out.println(String.format(Locale.US, 
-                "[SQLITE::ADD ORDER] %d :: %s :: %s :: %s :: %s :: R$ %.2f", clientID, status, description, orderDate, deliveryDate, finalPrice));
+                "[SQLITE::ADD ORDER] %d :: %s :: %s :: %s :: %s :: R$ %.2f :: R$ %.2f", clientID, status, description, orderDate, deliveryDate, finalPrice, laborCost));
 
             return response.toString();
         } catch (SQLException error) {
@@ -90,6 +98,7 @@ public class Order {
                 currentOrder.put("orderDate", allOrders.getString("orderDate"));
                 currentOrder.put("deliveryDate", allOrders.getString("deliveryDate"));
                 currentOrder.put("finalPrice", allOrders.getFloat("finalPrice"));
+                currentOrder.put("laborCost", allOrders.getFloat("laborCost"));
 
                 allOrdersArray.put(currentOrder);
             }
@@ -122,6 +131,7 @@ public class Order {
                 orderDetails.put("orderDate", resultSet.getString("orderDate"));
                 orderDetails.put("deliveryDate", resultSet.getString("deliveryDate"));
                 orderDetails.put("finalPrice", resultSet.getFloat("finalPrice"));
+                orderDetails.put("laborCost", resultSet.getFloat("laborCost"));
 
                 return orderDetails.toString();
             } else {
@@ -139,7 +149,7 @@ public class Order {
         Database.connect();
 
         String checkSQL = "SELECT id FROM orders WHERE id = ?";
-        String updateSQL = "UPDATE orders SET clientID = ?, status = ?, description = ?, orderDate = ?, deliveryDate = ?, finalPrice = ? WHERE id = ?";
+        String updateSQL = "UPDATE orders SET clientID = ?, status = ?, description = ?, orderDate = ?, deliveryDate = ?, finalPrice = ?, laborCost = ? WHERE id = ?";
 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
              PreparedStatement checkStmt = connection.prepareStatement(checkSQL);     
@@ -159,7 +169,8 @@ public class Order {
             updateStmt.setString(4, orderDate.toString());
             updateStmt.setString(5, deliveryDate.toString());
             updateStmt.setFloat(6, finalPrice);
-            updateStmt.setInt(7, id);
+            updateStmt.setFloat(7, laborCost);
+            updateStmt.setInt(8, id);
 
             updateStmt.executeUpdate();
 
@@ -170,8 +181,9 @@ public class Order {
             response.put("orderDate", orderDate);
             response.put("deliveryDate", deliveryDate);
             response.put("finalPrice", finalPrice);
+            response.put("laborCost", laborCost);
 
-            System.out.println(String.format(Locale.US, "[SQLITE::UPDATE ORDER] %d :: %s :: %s :: %s :: %s :: %.2f", clientID, status, description, orderDate, deliveryDate, finalPrice));
+            System.out.println(String.format(Locale.US,"[SQLITE::UPDATE ORDER] %d :: %s :: %s :: %s :: %s :: R$ %.2f :: R$ %.2f", clientID, status, description, orderDate, deliveryDate, finalPrice, laborCost));
 
             return response.toString();
         } catch (SQLException error) {
@@ -241,4 +253,37 @@ public class Order {
         }
     }
 
+    public void calculateFinalPriceUsingItems(List<Integer> selectedStorageItemIds) {
+        Database.connect();
+    
+        float totalPrice = 0.0f;
+    
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
+            connection.setAutoCommit(false); // Iniciar transação
+    
+            for (Integer itemId : selectedStorageItemIds) {
+                String storageItemJson = Storage.getStorageItemById(itemId);
+                if (storageItemJson == null) {
+                    throw new SQLException("Storage item with ID " + itemId + " not found");
+                }
+    
+                // Parse o JSON para obter as informações do item
+                JSONObject itemJson = new JSONObject(storageItemJson);
+                float itemPrice = itemJson.getFloat("price");
+    
+                // Adicione o preço do item ao preço total
+                totalPrice += itemPrice;
+            }
+    
+            // Adicione o custo de mão de obra ao preço total, se necessário
+            totalPrice += laborCost; // Supondo que laborCost seja um atributo da classe Order
+    
+            // Defina o preço final da ordem
+            this.finalPrice = totalPrice;
+            connection.commit(); // Confirmar transação
+    
+        } catch (SQLException error) {
+            System.out.println(error.getMessage());
+        }
+    }
 }

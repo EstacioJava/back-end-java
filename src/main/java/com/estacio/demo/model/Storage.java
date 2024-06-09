@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.util.Locale;
 import com.estacio.demo.controller.Database;
 
@@ -236,6 +235,10 @@ public class Storage {
           response.put("error", error.getMessage());
           return response.toString();
       }
+   }
+
+   public void calculateFinalPrice(){
+    
    }
 }
    

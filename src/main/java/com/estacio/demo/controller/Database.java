@@ -25,7 +25,11 @@ public class Database {
          );
          
          stmt.execute(
-            "CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, clientID INTEGER, status VARCHAR(255) NOT NULL, description TEXT, orderDate DATE NOT NULL, deliveryDate TEXT NOT NULL, finalPrice REAL NOT NULL, FOREIGN KEY (clientID) REFERENCES clients(id));"
+            "CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, clientID INTEGER, status VARCHAR(255) NOT NULL, description TEXT, orderDate DATE NOT NULL, deliveryDate TEXT NOT NULL, finalPrice REAL NOT NULL, laborCost REAL NOT NULL, FOREIGN KEY (clientID) REFERENCES clients(id));"
+         );
+         
+         stmt.execute(
+            "CREATE TABLE IF NOT EXISTS order_storage (orderID INTEGER, storageID INTEGER, quantity INTEGER, PRIMARY KEY (orderID, storageID), FOREIGN KEY (orderID) REFERENCES orders(id), FOREIGN KEY (storageID) REFERENCES storage(id));"
          );
 
          response.put("message", "Successfully connected to the database.");
