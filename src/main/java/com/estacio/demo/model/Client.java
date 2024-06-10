@@ -33,6 +33,7 @@ public class Client{
     public String addClient() {
         JSONObject response = new JSONObject();
         Database.connect();
+        // test
 
         String insertSQL = "INSERT INTO clients (name, cpf, email, phone, address) VALUES (?, ?, ?, ?, ?)";
 
