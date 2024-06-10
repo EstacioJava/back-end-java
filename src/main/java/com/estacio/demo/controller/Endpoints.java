@@ -169,8 +169,9 @@ public class Endpoints {
 
         client.setName(getJSONValue("name", request));
         client.setCpf(getJSONValue("cpf", request));
-        client.setCel(getJSONValue("cel", request));
+        client.setPhone(getJSONValue("phone", request));
         client.setEmail(getJSONValue("email", request));
+        client.setAddress(getJSONValue("address", request));
 
         return client.addClient();
     }
@@ -181,8 +182,9 @@ public class Endpoints {
 
         client.setName(getJSONValue("name", request));
         client.setCpf(getJSONValue("cpf", request));
-        client.setCel(getJSONValue("cel", request));
+        client.setPhone(getJSONValue("phone", request));
         client.setEmail(getJSONValue("email", request));
+        client.setAddress(getJSONValue("address", request));
 
         return client.updateClient(id);
     }

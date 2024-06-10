@@ -26,7 +26,6 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class Order {
-
     private Integer clientID;
     private Storage storage;
     private String status;
