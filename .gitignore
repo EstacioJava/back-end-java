@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Database ###
-**/src/main/resources/sqlite/db/**/*.db
+**/src/main/resources/sqlite/db/*

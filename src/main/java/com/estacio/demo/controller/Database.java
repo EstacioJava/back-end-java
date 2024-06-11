@@ -36,4 +36,10 @@ public class Database {
          return response.toString();
       }
    }
+
+   public static void backup () throws SQLException {
+      Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
+      Statement stmt = connection.createStatement();
+      stmt.execute("VACUUM INTO backup.db");
+   }
 }
