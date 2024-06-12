@@ -42,8 +42,7 @@ public class Order {
     public String addOrder() {
         JSONObject response = new JSONObject();
         Database.connect(); 
-        
-        calculateFinalPriceUsingItems(1,1);
+    
         String querySQL = "INSERT INTO orders (clientID, status, description, orderDate, deliveryDate, finalPrice, laborCost) VALUES (?, ?, ?, ?, ?, ?,?)";
 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db");
@@ -250,40 +249,6 @@ public class Order {
             System.out.println(error.getMessage());
             response.put("error", error.getMessage());
             return response.toString();
-        }
-    }
-
-    public void calculateFinalPriceUsingItems(List<Integer> selectedStorageItemIds) {
-        Database.connect();
-    
-        float totalPrice = 0.0f;
-    
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/sqlite/db/data.db")) {
-            connection.setAutoCommit(false); // Iniciar transação
-    
-            for (Integer itemId : selectedStorageItemIds) {
-                String storageItemJson = Storage.getStorageItemById(itemId);
-                if (storageItemJson == null) {
-                    throw new SQLException("Storage item with ID " + itemId + " not found");
-                }
-    
-                // Parse o JSON para obter as informações do item
-                JSONObject itemJson = new JSONObject(storageItemJson);
-                float itemPrice = itemJson.getFloat("price");
-    
-                // Adicione o preço do item ao preço total
-                totalPrice += itemPrice;
-            }
-    
-            // Adicione o custo de mão de obra ao preço total, se necessário
-            totalPrice += laborCost; // Supondo que laborCost seja um atributo da classe Order
-    
-            // Defina o preço final da ordem
-            this.finalPrice = totalPrice;
-            connection.commit(); // Confirmar transação
-    
-        } catch (SQLException error) {
-            System.out.println(error.getMessage());
         }
     }
 }
